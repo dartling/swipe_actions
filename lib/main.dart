@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +10,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,7 +32,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _isStarred = false;
+  bool _isDashStarred = false;
+  bool _isSlidableStarred = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 log('Starring');
                 // The widget is never dismissed in this case. Your star logic goes here.
                 setState(() {
-                  _isStarred = !_isStarred;
+                  _isDashStarred = !_isDashStarred;
                 });
                 return false;
               }
@@ -89,7 +90,73 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.flutter_dash),
               title: const Text('Dash'),
               subtitle: const Text('Hello!'),
-              trailing: Icon(_isStarred ? Icons.star : Icons.star_outline),
+              trailing: Icon(_isDashStarred ? Icons.star : Icons.star_outline),
+            ),
+          ),
+          Slidable(
+            key: UniqueKey(),
+            startActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (_) {
+                    // Your star logic goes here.
+                    setState(() {
+                      _isSlidableStarred = !_isSlidableStarred;
+                    });
+                  },
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  icon: Icons.star,
+                  label: 'Star',
+                ),
+                SlidableAction(
+                  onPressed: (_) {},
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  icon: Icons.share,
+                  label: 'Share',
+                ),
+              ],
+            ),
+            endActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              dismissible: DismissiblePane(
+                onDismissed: () {
+                  // Your deletion logic goes here.
+                },
+                confirmDismiss: () async {
+                  return await _confirmDeletion(context) ?? false;
+                },
+              ),
+              children: [
+                SlidableAction(
+                  onPressed: (_) {},
+                  backgroundColor: Colors.indigo,
+                  foregroundColor: Colors.white,
+                  icon: Icons.archive,
+                  label: 'Archive',
+                ),
+                SlidableAction(
+                  onPressed: (_) async {
+                    if (await _confirmDeletion(context) ?? false) {
+                      // Your deletion logic also goes here; we can delete either
+                      // by tapping on this action or swiping the tile all the way left.
+                    }
+                  },
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete,
+                  label: 'Delete',
+                ),
+              ],
+            ),
+            child: ListTile(
+              leading: const Icon(Icons.swipe),
+              title: const Text('flutter_slidable'),
+              subtitle: const Text('Use me for even more actions.'),
+              trailing:
+                  Icon(_isSlidableStarred ? Icons.star : Icons.star_outline),
             ),
           ),
         ],
