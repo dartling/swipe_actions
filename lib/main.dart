@@ -32,6 +32,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _isStarred = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,14 +47,35 @@ class _MyHomePageState extends State<MyHomePage> {
             direction: DismissDirection.horizontal,
             onDismissed: (DismissDirection direction) {
               log('Dismissed with direction $direction');
-              // Your deletion logic goes here.
+              if (direction == DismissDirection.endToStart) {
+                // Your deletion logic goes here.
+              }
             },
             confirmDismiss: (DismissDirection direction) async {
-              final confirmed = await _confirmDeletion(context);
-              log('Deletion confirmed: $confirmed');
-              return confirmed;
+              if (direction == DismissDirection.endToStart) {
+                final confirmed = await _confirmDeletion(context);
+                log('Deletion confirmed: $confirmed');
+                return confirmed;
+              } else {
+                log('Starring');
+                // The widget is never dismissed in this case. Your star logic goes here.
+                setState(() {
+                  _isStarred = !_isStarred;
+                });
+                return false;
+              }
             },
             background: const ColoredBox(
+              color: Colors.orange,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Icon(Icons.star, color: Colors.white),
+                ),
+              ),
+            ),
+            secondaryBackground: const ColoredBox(
               color: Colors.red,
               child: Align(
                 alignment: Alignment.centerRight,
@@ -62,10 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            child: const ListTile(
-              leading: Icon(Icons.flutter_dash),
-              title: Text('Dash'),
-              subtitle: Text('Hello!'),
+            child: ListTile(
+              leading: const Icon(Icons.flutter_dash),
+              title: const Text('Dash'),
+              subtitle: const Text('Hello!'),
+              trailing: Icon(_isStarred ? Icons.star : Icons.star_outline),
             ),
           ),
         ],
