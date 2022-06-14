@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
           SlidableMessage(
             icon: Icon(Icons.swipe_left),
             sender: 'flutter_slidable',
-            content: 'User me for even more actions.',
+            content: 'Use me for even more actions.',
           ),
         ],
       ),
